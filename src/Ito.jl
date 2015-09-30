@@ -1,5 +1,5 @@
-require("Calendar")
-require("Distributions")
+using Calendar
+using Distributions
 
 module Ito
 

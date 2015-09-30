@@ -1,14 +1,16 @@
 module Currencies
 
+import Base: ==, <, -, +, *, /
+
 immutable Currency
-	name::String
-	code::String
+	name::AbstractString
+	code::AbstractString
 	numeric::Int
-	symbol::String
-	fractionSymbol::String
+	symbol::AbstractString
+	fractionSymbol::AbstractString
 	fractionsPerUnit::Int
 	rounding::Function
-	formatString::String
+	formatString::AbstractString
 end
 
 
@@ -31,7 +33,7 @@ list_currencies=[
 ("Peruvian inti", "PEI", 998, "I/.", "", 100, identity, "%3% %1\$.2f"),
 ("Peruvian sol", "PEH", 999, "S./", "", 100, identity, "%3% %1\$.2f"),
 ("Trinidad & Tobago dollar", "TTD", 780, "TTD\$", "", 100, identity, "%3% %1\$.2f"),
-("U.S. dollar", "USD", 840, "\$", "¢", 100, identity, "%3% %1\$.2f"),
+("U.S. dollar", "USD", 840, "\$", "ï¿½", 100, identity, "%3% %1\$.2f"),
 ("Venezuelan bolivar", "VEB", 862, "Bs", "", 100, identity, "%3% %1\$.2f"),
 
 # Asia
@@ -42,7 +44,7 @@ list_currencies=[
 ("Indian rupee", "INR", 356, "Rs", "", 100, identity, "%3% %1\$.2f"),
 ("Iraqi dinar", "IQD", 368, "ID", "", 1000, identity, "%2% %1\$.3f"),
 ("Iranian rial", "IRR", 364, "Rls", "", 1, identity, "%3% %1\$.2f"),
-("Japanese yen", "JPY", 392, "¥", "", 100, identity, "%3% %1\$.0f"),
+("Japanese yen", "JPY", 392, "ï¿½", "", 100, identity, "%3% %1\$.0f"),
 ("South-Korean won", "KRW", 410, "W", "", 100, identity, "%3% %1\$.0f"),
 ("Kuwaiti dinar", "KWD", 414, "KD", "", 1000, identity, "%3% %1\$.3f"),
 ("Nepal rupee", "NPR", 524, "NRs", "", 100, identity, "%3% %1\$.2f"),
@@ -59,7 +61,7 @@ list_currencies=[
 ("Czech koruna", "CZK", 203, "Kc", "", 100, identity, "%1\$.2f %3%"),
 ("Danish krone", "DKK", 208, "Dkr", "", 100, identity, "%3% %1\$.2f"),
 ("European Euro", "EUR", 978, "", "", 100, x->round(x,2), "%2% %1\$.2f"),
-("British pound sterling", "GBP", 826,  "£", "p", 100, identity, "%3% %1\$.2f"),
+("British pound sterling", "GBP", 826,  "ï¿½", "p", 100, identity, "%3% %1\$.2f"),
 ("Hungarian forint", "HUF", 348, "Ft", "", 1, identity, "%1\$.0f %3%"),
 ("Iceland krona", "ISK", 352, "IKr", "", 100, identity, "%1\$.2f %3%"),
 ("Lithuanian litas", "LTL", 440, "Lt", "", 100, identity, "%1\$.2f %3%"),
@@ -74,7 +76,7 @@ list_currencies=[
 # Europe deprecated
 ("Austrian shilling", "ATS", 40, "", "", 100, identity, "%2% %1\$.2f"),
 ("Belgian franc", "BEF", 56, "", "", 1, identity, "%2% %1\$.0f"),
-("Cyprus pound", "CYP", 196, "£", "", 100, identity, "%3% %1\$.2f"),
+("Cyprus pound", "CYP", 196, "ï¿½", "", 100, identity, "%3% %1\$.2f"),
 ("Deutsche mark", "DEM", 276, "DM", "", 100, identity, "%1\$.2f %3%"),
 ("Estonian kroon", "EEK", 233, "KR", "", 100, identity, "%1\$.2f %2%"),
 ("Spanish peseta", "ESP", 724, "Pta", "", 100, identity, "%1\$.0f %3%"),
@@ -96,7 +98,7 @@ list_currencies=[
 ("New Zealand dollar", "NZD", 554, "NZ\$", "", 100, identity, "%3% %1\$.2f")
 ]
 
-list_deprecated=[
+list_deprecated=Dict(
 "ATS"=>"EUR",
 "BEF"=>"EUR",
 "CYP"=>"EUR",
@@ -119,9 +121,9 @@ list_deprecated=[
 "ROL"=>"RON",
 "PEH"=>"PEI",
 "PEI"=>"PEN"
-]
+)
 
-# Codegen function 
+# Codegen function
 for currency in list_currencies
 	@eval ($(symbol("$(currency[2])"*"Currency")))()=Currency(($currency)...)
 end

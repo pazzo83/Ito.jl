@@ -9,10 +9,10 @@ using StatsBase
 
 import Base.mean, Base.std, Base.var
 
-export mean, var, std,  
-		gaussian_regret, gaussian_percentile, gaussian_top_percentile,  gaussian_shortfall, gaussian_average_shortfall, 
+export mean, var, std,
+		gaussian_regret, gaussian_percentile, gaussian_top_percentile,  gaussian_shortfall, gaussian_average_shortfall,
 		gaussian_expected_shortfall, gaussian_downside_variance, gaussian_downside_deviation, gaussian_value_at_risk,
-		semi_variance, semi_deviation, percentile, top_percentile, downside_variance, downside_deviation, 
+		semi_variance, semi_deviation, percentile, top_percentile, downside_variance, downside_deviation,
 		shortfall, average_shortfall, expected_shortfall, value_at_risk, regret
 
 #if !isdefined(Main.StatsBase,:weights)
@@ -20,11 +20,11 @@ export mean, var, std,
 #   mean(v::AbstractVector, w::AbstractVector) = sum(v.*w)/sum(w)
 #end
 
-function var(v::AbstractVector, w::AbstractVector, m) 
+function var(v::AbstractVector, w::AbstractVector, m)
 	n=length(v)
 	@assert (n>1)
-	s=expectation_value(v, w, (x)->(x-m)^2, (x)->true) [1]
-	
+	s=expectation_value(v, w, (x)->(x-m)^2, (x)->true)[1]
+
 	return s*n/(n-1)
 end
 std(v::AbstractVector, w::AbstractVector) = sqrt(var(v, w))
@@ -78,7 +78,7 @@ function gaussian_expected_shortfall(v::AbstractVector, w::AbstractVector, perce
 	return -1*min(r,0)
 end
 
-function gaussian_shortfall(v::AbstractVector, w::AbstractVector, target::Real) 
+function gaussian_shortfall(v::AbstractVector, w::AbstractVector, target::Real)
 	m=mean(v,weights(w))
 	s=stdm(v,m)
 	cdf(Normal(m,s), target)
@@ -103,7 +103,7 @@ downside_variance(v) = regret(v, 0)
 downside_deviation(v) = sqrt(downside_variance(v))
 
 #Dembo and Freeman, "The Rules Of Risk", Wiley (2001)
-function regret(v::AbstractVector, w::AbstractVector, target::Real) 
+function regret(v::AbstractVector, w::AbstractVector, target::Real)
 	n=length(v)
 	(r,_)=expectation_value(v, w, (x)->(x-target)^2, (x)->(x<target))
 	r*n/(n-1)
@@ -113,7 +113,7 @@ potential_upside(v::AbstractVector, w::AbstractVector, p::Real) = max(percentile
 value_at_risk(v::AbstractVector, w::AbstractVector, p::Real) = -1*min(percentile(v,w,1-p),0)
 
 #Artzner, Delbaen, Eber and Heath, "Coherent measures of risk", Mathematical Finance 9 (1999)
-function expected_shortfall(v::AbstractVector, w::AbstractVector, p::Real) 
+function expected_shortfall(v::AbstractVector, w::AbstractVector, p::Real)
 	@assert p>= 0.9 && p <1
 	target = -1* value_at_risk(v, w, p)
 
@@ -122,11 +122,11 @@ function expected_shortfall(v::AbstractVector, w::AbstractVector, p::Real)
 end
 
 function average_shortfall(v::AbstractVector, w::AbstractVector, target::Real)
-	return expectation_value(v, w, (x)->(target-x), (x)->(x<target)) [1]
+	return expectation_value(v, w, (x)->(target-x), (x)->(x<target))[1]
 end
 
-function shortfall(v::AbstractVector, w::AbstractVector, target::Real) 
-	return expectation_value(v, w, (x)->(1), (x)->(x<target)) [1]
+function shortfall(v::AbstractVector, w::AbstractVector, target::Real)
+	return expectation_value(v, w, (x)->(1), (x)->(x<target))[1]
 end
 
 function expectation_value(v::AbstractVector, w::AbstractVector, mapfun::Function, filterfun::Function)
@@ -147,13 +147,13 @@ function expectation_value(v::AbstractVector, w::AbstractVector, mapfun::Functio
 	if n==0
 		 return NaN, 0
 	end
-	return s/sw , n 
+	return s/sw , n
 end
 
 
-#Weighted percentile. 
+#Weighted percentile.
 #Warning! Both value and weight arrays are copied and sorted
-function percentile(v::AbstractVector, w::AbstractVector, p::Real) 
+function percentile(v::AbstractVector, w::AbstractVector, p::Real)
 	@assert p>0 && p<1
 	wts = sum(w)
 	@assert wts > 0
@@ -170,7 +170,7 @@ function percentile(v::AbstractVector, w::AbstractVector, p::Real)
 	return vs[k]
 end
 
-function top_percentile(v::AbstractVector, w::AbstractVector, p::Real) 
+function top_percentile(v::AbstractVector, w::AbstractVector, p::Real)
 	@assert p>0 && p<1
 	wts = sum(w)
 	@assert wts > 0
@@ -195,9 +195,9 @@ function kurtosis(v::AbstractVector, w::AbstractVector, m, corrected::Bool)
 		@assert n>3
 		c1=(n/(n-1.0)) * (n/(n-2.0)) * ((n+1.0)/(n-3.0))
 		c2=3.0 * ((n-1.0)/(n-2.0)) * ((n-1.0)/(n-3.0));
-		#(n*(n+1)*k)/((n-1)*(n-2)*(n-3))  - 3*(n-1)*(n-1)/( (n-2)*(n-3))   
+		#(n*(n+1)*k)/((n-1)*(n-2)*(n-3))  - 3*(n-1)*(n-1)/( (n-2)*(n-3))
 		c1*y/(var(v)^2) -c2
-	else 
+	else
 		k - 3
 	end
 end

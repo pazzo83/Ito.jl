@@ -42,7 +42,7 @@ string(::ISDAActualActual) = "Actual/Actual ISDA basis"
 string(::AFBActualActual) = "Actual/Actual AFB basis"
 
 
-#Assumes both CalendarTime objects represent midnight in the same tz. 
+#Assumes both CalendarTime objects represent midnight in the same tz.
 #The rounding takes care of summer time and leap second
 #Will fail if they represent arbitrary times of day
 daycount(c::DayCount,  d_start::CalendarTime,  d_end::CalendarTime) = iround((d_end-d_start).millis/86400e3)
@@ -56,7 +56,7 @@ function daycount(c::BondThirty360,  d_start::CalendarTime,  d_end::CalendarTime
      yy2 = year(d_end)
 
     if dd2 == 31 && dd1 < 30
-    	dd2 = 1 
+    	dd2 = 1
     	mm2 = mm2+1
     end
 
@@ -82,10 +82,10 @@ function daycount(c::ItalianThirty360,  d_start::CalendarTime,  d_end::CalendarT
     yy1 = year(d_start)
     yy2 = year(d_end)
 
-    if (mm1 == 2 && dd1 > 27) 
+    if (mm1 == 2 && dd1 > 27)
         dd1 = 30
     end
-    if (mm2 == 2 && dd2 > 27) 
+    if (mm2 == 2 && dd2 > 27)
         dd2 = 30
     end
 
@@ -94,7 +94,7 @@ end
 
 daycount(c::BusinessDay252, d_start::CalendarTime, d_end::CalendarTime) = businessDaysBetween(c.bc, d_start, d_end)
 
-yearfraction(c::Union(Actual360,Thirty360),  d_start::CalendarTime,  d_end::CalendarTime) = daycount(c, d_start, d_end) / 360
+yearfraction(c::Union{Actual360,Thirty360},  d_start::CalendarTime,  d_end::CalendarTime) = daycount(c, d_start, d_end) / 360
 
 yearfraction(c::Actual365,  d_start::CalendarTime,  d_end::CalendarTime) = daycount(c, d_start, d_end) / 365
 
@@ -135,7 +135,7 @@ function yearfraction(c::AFBActualActual,  d_start::CalendarTime,  d_end::Calend
 	    if (day(temp) == 28 && month(temp) == 2 && isleapyear(temp))
 	        temp + days(1)
 	    end
-	    if (temp>=(d_start)) 
+	    if (temp>=(d_start))
 	        sum += 1.0
 	        newD2 = temp
 	    end
@@ -143,7 +143,7 @@ function yearfraction(c::AFBActualActual,  d_start::CalendarTime,  d_end::Calend
 
 	den = 365.0
 
-	if isleapyear(newD2) 
+	if isleapyear(newD2)
 	    if (newD2 > ymd(year(newD2), February, 29) && d_start < ymd(year(newD2), February, 29) )
 	        den += 1.0
 	    end
@@ -165,16 +165,16 @@ function yearfraction(c::ISMAActualActual,  d_start::CalendarTime,  d_end::Calen
         return -yearFraction(d_end, d_start, ref_start, ref_end)
     end
 
-    ref_period_start =  ref_start 
-    ref_period_end   = ref_end 
+    ref_period_start =  ref_start
+    ref_period_end   = ref_end
 
     @assert ref_period_end > ref_period_start && ref_period_end > d_start
 
     # estimate roughly the length in months of a period
-    mnths = ifloor (0.5 + 12 * daycount(c,  ref_period_start, ref_period_end) / 365)
+    mnths = ifloor(0.5 + 12 * daycount(c,  ref_period_start, ref_period_end) / 365)
 
     # for short periods, take the reference period as 1 year from d_start
-    if (mnths == 0) 
+    if (mnths == 0)
         ref_period_start = d_start
         ref_period_end = d_start + year(1)
         mnths = 12
@@ -192,7 +192,7 @@ function yearfraction(c::ISMAActualActual,  d_start::CalendarTime,  d_end::Calen
             # ref_period_start < d_start <= d_end < ref_period_end
             # could give wrong results] ???
             return period * daycount(c,d_start, d_end) / daycount(c,ref_period_start, ref_period_end)
-        else 
+        else
             # here ref_period_start is the next (maybe notional)
             # payment date and ref_period_end is the second next
             # (maybe notional) payment date.
@@ -208,10 +208,10 @@ function yearfraction(c::ISMAActualActual,  d_start::CalendarTime,  d_end::Calen
                 return yearfraction(d_start, d_end, previousRef,ref_period_start)
             end
         end
-    else 
+    else
         # here ref_period_end is the last notional payment date
         # d_start < ref_period_end < d_end AND ref_period_start < ref_period_end
-        @assert ref_period_start<=d_start 
+        @assert ref_period_start<=d_start
         # now it is: ref_period_start <= d_start < ref_period_end < d_end
 
         # the part from d_start to ref_period_end
@@ -227,7 +227,7 @@ function yearfraction(c::ISMAActualActual,  d_start::CalendarTime,  d_end::Calen
             newRefEnd = ref_period_end+ months(months * (i + 1))
             if (d_end<newRefEnd)
                 break
-            else 
+            else
                 sum += period
                 i += 1
             end
@@ -238,6 +238,3 @@ function yearfraction(c::ISMAActualActual,  d_start::CalendarTime,  d_end::Calen
 end
 
 yearfraction(c::BusinessDay252, d_start::CalendarTime, d_end::CalendarTime) = daycount(c, d_start, d_end) / 252
-
-
-

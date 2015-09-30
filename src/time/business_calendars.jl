@@ -76,36 +76,36 @@ const o_easter_monday = [
 easterMonday(c::WesternCalendar, y::Int) = w_easter_monday[y-1900]
 easterMonday(c::OrthodoxCalendar, y::Int) = o_easter_monday[y-1900]
 
-isWeekend(c::Union(WesternCalendar, OrthodoxCalendar), dow::Int) = (dow == 7 || dow == 1)
+isWeekend(c::Union{WesternCalendar, OrthodoxCalendar}, dow::Int) = (dow == 7 || dow == 1)
 
 businessDaysBetween(c::BusinessCalendar, from::CalendarTime, to::CalendarTime) = businessDaysBetween(c, from, to, true, false)
 
-function businessDaysBetween(c::BusinessCalendar, from::CalendarTime, to::CalendarTime, includeFirst::Bool,  includeLast::Bool) 
+function businessDaysBetween(c::BusinessCalendar, from::CalendarTime, to::CalendarTime, includeFirst::Bool,  includeLast::Bool)
   wd = 0
-  if (from != to) 
-      if (from < to) 
-         for  d in from:days(1):to 
-              if (isBusinessDay(c, d)) 
+  if (from != to)
+      if (from < to)
+         for  d in from:days(1):to
+              if (isBusinessDay(c, d))
                   wd += 1
               end
           end
-      elseif (from > to) 
+      elseif (from > to)
           for d in to:days(1):from
-              if (isBusinessDay(c, d)) 
+              if (isBusinessDay(c, d))
                   wd += 1
               end
           end
-          
+
       end
 
-      if (isBusinessDay(c, from) && !includeFirst) 
+      if (isBusinessDay(c, from) && !includeFirst)
           wd -= 1
       end
-      if (isBusinessDay(c, to) && !includeLast) 
+      if (isBusinessDay(c, to) && !includeLast)
           wd -= 1
       end
 
-      if (from > to) 
+      if (from > to)
           wd = -wd
       end
   end
@@ -116,4 +116,3 @@ end
 include("calendars/UnitedKingdom.jl")
 include("calendars/UnitedStates.jl")
 include("calendars/India.jl")
-
