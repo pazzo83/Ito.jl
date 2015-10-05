@@ -48,15 +48,19 @@ x0(p::GeometricBrownianMotion) = p.start
 
 # GenericBlackScholesProcess functions
 
-apply_change(sp::GenericBlackScholesProcess, x, dx) = x + exp(dx)
+apply_change(sp::GenericBlackScholesProcess, x::Float64, dx::Float64) = x * exp(dx)
 
-diffusion(sp::GenericBlackScholesProcess, t, x) = vol(sp, t, x)
+diffusion(sp::GenericBlackScholesProcess, t::Float64, x::Float64) = vol(sp, t, x)
+
+function evolve(sp::GenericBlackScholesProcess, t0::Float64, x0::Float64, dt::Float64, dw::Float64)
+	return apply_change(sp, x0, drift_discretize(sp, t0, x0, dt) + diffusion_discretize(sp, t0, x0, dt) * dw)
+end
 
 function vol(sp::GenericBlackScholesProcess, t::Float64, x::Float64)
 	return sp.vol.vol
 end
 
-function drift(sp::GenericBlackScholesProcess, t, x)
+function drift(sp::GenericBlackScholesProcess, t::Float64, x::Float64)
 	t1 = t+.0001
 	r = forward_rate(sp.yts, :Continuous, :NoFrequency, t, t1)
 	d = forward_rate(sp.dts, :Continuous, :NoFrequency, t, t1)
