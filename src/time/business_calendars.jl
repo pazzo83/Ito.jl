@@ -1,7 +1,5 @@
 #included within module Time
 
-export easterMonday, isWeekend, isWorkingDay
-
 abstract BusinessCalendar
 
 abstract WesternCalendar <: BusinessCalendar
