@@ -1,5 +1,5 @@
 # cashflows
-module CashFLows
+module CashFlows
 
 export CashFlow, accrual_period, accrual_days
 
@@ -8,7 +8,7 @@ using DataArrays
 using Calendar
 using Ito.Time
 
-type CashFLows
+type CashFlow
   cash_flow_df::DataFrame
 end
 
@@ -24,8 +24,8 @@ start_date(cf::CashFlow) = sort(cf.cash_flow_df, cols = :dates)[:dates][1]
 maturity_date(cf::CashFlow) = sort(cf:cash_flow_df, cols = :dates, rev = true)[:dates][1]
 is_expired(cf::CashFlow, settle_date::CalendarTime) = maturity_date(cf) < settle_date
 
-previous_cash_flow(cf::CashFlow, settle_date::CalendarTime) = cf.cash_flow_df[cf.cash_flow_df[:dates] .< settle_date]
-next_cash_flow(cf::CashFlow, settle_date::CalendarTime) = cf.cash_flow_df[cf.cashflow[:dates] .> settle_date]
+previous_cash_flow(cf::CashFlow, settle_date::CalendarTime) = cf.cash_flow_df[cf.cash_flow_df[:dates] .< settle_date, :]
+next_cash_flow(cf::CashFlow, settle_date::CalendarTime) = cf.cash_flow_df[cf.cashflow[:dates] .> settle_date, :]
 
 function previous_cash_flow_date(cf::CashFlow, settle_date::CalendarTime)
   prev_df = sort(previous_cash_flow(cf, settle_date), cols = :dates, rev = true)
