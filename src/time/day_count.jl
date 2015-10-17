@@ -45,7 +45,7 @@ string(::AFBActualActual) = "Actual/Actual AFB basis"
 #Assumes both CalendarTime objects represent midnight in the same tz.
 #The rounding takes care of summer time and leap second
 #Will fail if they represent arbitrary times of day
-daycount(c::DayCount,  d_start::CalendarTime,  d_end::CalendarTime) = iround((d_end-d_start).millis/86400e3)
+daycount(c::DayCount,  d_start::CalendarTime,  d_end::CalendarTime) = round(Integer, (d_end-d_start).millis/86400e3)
 
 function daycount(c::BondThirty360,  d_start::CalendarTime,  d_end::CalendarTime)
 	dd1 = day(d_start)
